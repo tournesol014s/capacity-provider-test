@@ -2,7 +2,6 @@ resource "aws_ecs_service" "capacity_provider_test" {
   name                               = "capacity-provider-test"
   cluster                            = aws_ecs_cluster.capacity_provider_test.id
   task_definition                    = aws_ecs_task_definition.capacity_provider_test.arn
-  launch_type                        = "EC2"
   scheduling_strategy                = "REPLICA"
   desired_count                      = 2
   deployment_minimum_healthy_percent = 100
@@ -20,6 +19,12 @@ resource "aws_ecs_service" "capacity_provider_test" {
     target_group_arn = aws_lb_target_group.capacity_provider_test.arn
     container_name   = "nginx"
     container_port   = 80
+  }
+
+  capacity_provider_strategy {
+    base              = 1
+    weight            = 100
+    capacity_provider = aws_ecs_capacity_provider.capacity_provider_test.name
   }
 
   lifecycle {
